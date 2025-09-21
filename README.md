@@ -1,4 +1,3 @@
-# project-management-tool
 # Project Management Tool
 
 ### Full Name: Tanmaya Das
