@@ -4,7 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 import os
 from app.database import create_tables
-from app.api import users, projects, tasks, ai
+from app.api import users, projects, tasks, ai, auth
 from app.auth import get_current_active_user, User
 
 # Create FastAPI app
@@ -29,6 +29,7 @@ app.add_middleware(
 create_tables()
 
 # Include API routers
+app.include_router(auth.router, prefix="/api/auth", tags=["authentication"])
 app.include_router(users.router, prefix="/api/users", tags=["users"])
 app.include_router(projects.router, prefix="/api/projects", tags=["projects"])
 app.include_router(tasks.router, prefix="/api/tasks", tags=["tasks"])
