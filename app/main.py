@@ -5,7 +5,8 @@ from fastapi.responses import HTMLResponse
 import os
 from app.database import create_tables
 from app.api import users, projects, tasks, ai, auth
-from app.auth import get_current_active_user, User
+from app.auth import get_current_active_user
+from app.database.models import User as DBUser
 
 # Create FastAPI app
 app = FastAPI(
@@ -78,7 +79,7 @@ async def health_check():
     return {"status": "healthy", "message": "Project Management Tool API is running"}
 
 @app.get("/api/me")
-async def get_current_user_info(current_user: User = Depends(get_current_active_user)):
+async def get_current_user_info(current_user: DBUser = Depends(get_current_active_user)):
     """Get current user information"""
     return {
         "id": current_user.id,

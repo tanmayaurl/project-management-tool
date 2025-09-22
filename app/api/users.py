@@ -8,9 +8,9 @@ from app.auth import (
     require_role, 
     UserCreate, 
     UserResponse,
-    get_password_hash,
-    User as AuthUser
+    get_password_hash
 )
+from app.database.models import User as AuthUser
 from pydantic import BaseModel
 from datetime import datetime
 

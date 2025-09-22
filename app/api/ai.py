@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List
 from app.database.session import get_db
-from app.database.models import Project, UserStory, ProjectMember
+from app.database.models import Project, UserStory, ProjectMember, UserRole
 from app.auth import get_current_active_user, User as AuthUser
 from pydantic import BaseModel
 import os
@@ -133,7 +133,7 @@ async def generate_user_stories(
         )
     
     # Check if user has access to project
-    if current_user.role != "admin":
+    if current_user.role != UserRole.ADMIN:
         member = db.query(ProjectMember).filter(
             ProjectMember.project_id == request.project_id,
             ProjectMember.user_id == current_user.id
@@ -181,7 +181,7 @@ async def get_project_user_stories(
         )
     
     # Check if user has access to project
-    if current_user.role != "admin":
+    if current_user.role != UserRole.ADMIN:
         member = db.query(ProjectMember).filter(
             ProjectMember.project_id == project_id,
             ProjectMember.user_id == current_user.id
@@ -221,7 +221,7 @@ async def generate_tasks_from_stories(
         )
     
     # Check if user has access to project
-    if current_user.role != "admin":
+    if current_user.role != UserRole.ADMIN:
         member = db.query(ProjectMember).filter(
             ProjectMember.project_id == project_id,
             ProjectMember.user_id == current_user.id

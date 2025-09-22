@@ -3,7 +3,8 @@ from sqlalchemy.orm import Session
 from typing import List, Optional
 from app.database.session import get_db
 from app.database.models import Project, User, ProjectMember, Task, TaskStatus
-from app.auth import get_current_active_user, require_role, UserRole, User as AuthUser
+from app.auth import get_current_active_user, require_role
+from app.database.models import UserRole, User as AuthUser
 from pydantic import BaseModel
 from datetime import datetime
 
