@@ -1,70 +1,122 @@
 # Project Management Tool
 
-### Full Name: Tanmaya Das
-### Contact: tilottamadas184@gmail.com
-### Submission Date: 21 September 2025
+A modern Project Management Tool with FastAPI backend, PostgreSQL (or SQLite for dev), JWT auth, role-based authorization (Admin/Manager/Developer), and a React frontend. Includes an AI-powered User Story generator via Groq.
 
-## 📝 Project Brief
+## Features
+- Users: register/login, roles (admin/manager/developer)
+- Projects: CRUD, members, progress
+- Tasks: CRUD, assignee, status, due dates, comments
+- Dashboard: metrics and charts
+- AI: generate user stories with Groq and save to project
+- RESTful design, clean architecture, tests, and docs
 
-This project is a simplified web application for managing software projects, built as a RESTful API. It includes core functionalities for project and task management, user roles, and basic reporting.
+## Tech Stack
+- Backend: FastAPI (Python), SQLAlchemy, Alembic, JWT (python-jose), Pydantic v2
+- DB: PostgreSQL (prod) / SQLite (dev quickstart)
+- Frontend: React + React Query + TailwindCSS
+- AI: Groq API (optional)
 
-## 🚀 Tech Stack
+## Quickstart (Windows PowerShell)
 
-- **Backend**: Python (FastAPI)
-- **Database**: PostgreSQL
-- **Tools**: Postman, Git
+1) Python venv and deps
+```powershell
+py -3.12 -m venv .venv312
+.\.venv312\Scripts\Activate.ps1
+pip install -r requirements.txt
+```
 
-## 📂 Functional Requirements
+2) Environment
+Create a `.env` in the repo root:
+```
+# Database
+DATABASE_URL=sqlite:///./dev.db
 
-- **User Roles**: Admin, Project Manager, Developer with role-based access control.
-- **Project Module**: CRUD operations for projects, team member assignment.
-- **Task Module**: CRUD for tasks, status tracking (To Do, In Progress, Done), and deadlines.
-- **Authentication**: JWT token-based security.
-- **Reporting**: Endpoints for task counts by status and overdue tasks.
-- **Bonus**: An AI-powered endpoint to generate user stories from a project description using the Groq API.
+# JWT
+SECRET_KEY=change-this-in-prod
+ACCESS_TOKEN_EXPIRE_MINUTES=60
 
-## 🔧 How to Run the Project
+# AI (optional)
+GROQ_API_KEY=your_groq_api_key
+```
 
-1.  **Clone the repository:**
-    ```bash
-    git clone 
-    cd project-management-tool
-    ```
-2.  **Set up a virtual environment:**
-    ```bash
-    python -m venv venv
-    source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
-    ```
-3.  **Install dependencies:**
-    ```bash
-    pip install -r requirements.txt
-    ```
-4.  **Configure environment variables:**
-    Create a `.env` file in the root directory and add your database and API keys.
-    ```
-    DATABASE_URL="postgresql://user:password@host:port/database"
-    SECRET_KEY="your_jwt_secret_key"
-    GROQ_API_KEY="your_groq_api_key"
-    ```
-5.  **Run the server:**
-    ```bash
-    uvicorn app.main:app --reload
-    ```
-    The API will be available at `http://127.0.0.1:8000`. You can access the auto-generated Swagger UI at `http://127.0.0.1:8000/docs`.
+3) Run backend
+```powershell
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
+API docs at http://localhost:8000/api/docs
 
-## 📌 API Endpoints Summary
+4) Frontend
+```powershell
+cd frontend
+npm install
+# Create frontend/.env
+# REACT_APP_API_URL=http://localhost:8000
+npm start
+```
+UI at http://localhost:3000
 
--   **Users**: `POST /api/users/register`, `POST /api/users/login`, `GET /api/users/me`
--   **Projects**: `POST /api/projects/`, `GET /api/projects/`, `GET /api/projects/{id}`, `PUT /api/projects/{id}`, `DELETE /api/projects/{id}`
--   **Tasks**: `POST /api/tasks/`, `GET /api/tasks/`, `GET /api/tasks/{id}`, `PUT /api/tasks/{id}`, `DELETE /api/tasks/{id}`
--   **Reports**: `GET /api/reports/tasks-by-status/{project_id}`, `GET /api/reports/overdue-tasks`
--   **AI**: `POST /api/ai/generate-user-stories`
+## Roles & Permissions
+- Admin: manage all users/projects/tasks
+- Manager: create/edit projects, assign tasks
+- Developer: view assigned tasks, update status, comment
 
-## 🔮 Assumptions & Improvements
+## API Overview
+- Auth
+  - POST `/api/auth/register`
+  - POST `/api/auth/login`
+- Users
+  - GET `/api/users` (admin)
+  - GET `/api/users/me`
+  - PUT `/api/users/{id}`
+  - DELETE `/api/users/{id}` (admin)
+- Projects
+  - POST `/api/projects/` (admin/manager)
+  - GET `/api/projects/`
+  - GET `/api/projects/{id}`
+  - PUT `/api/projects/{id}`
+  - DELETE `/api/projects/{id}`
+  - POST `/api/projects/{id}/members`
+- Tasks
+  - POST `/api/tasks/`
+  - GET `/api/tasks`
+  - GET `/api/tasks/my-tasks`
+  - GET `/api/tasks/{id}`
+  - PUT `/api/tasks/{id}`
+  - DELETE `/api/tasks/{id}`
+  - POST `/api/tasks/{id}/comments`
+  - GET `/api/tasks/{id}/comments`
+- AI
+  - POST `/api/ai/generate-user-stories`
+  - GET `/api/ai/projects/{project_id}/user-stories`
+  - POST `/api/ai/generate-tasks-from-stories`
 
--   **Assumptions**: This is a simplified prototype, so detailed features like advanced search, notifications, or a full-fledged commenting system were not implemented. Password hashing is used for security.
--   **Improvements**:
-    -   Implement comprehensive unit and integration tests.
-    -   Add a more detailed reporting dashboard.
-    -   Create a real-time notification system for task updates.
-    -   Containerize the application using Docker for easier deployment.
+Import `_deliverables/postman_collection.json` in Postman for ready-made requests.
+
+## Testing
+```powershell
+pytest -q
+```
+
+## Docker (Backend + Postgres)
+1) Create `.env` with Postgres connection:
+```
+DATABASE_URL=postgresql://postgres:postgres@db:5432/pmtool
+SECRET_KEY=change-in-prod
+ACCESS_TOKEN_EXPIRE_MINUTES=60
+GROQ_API_KEY=your_groq_api_key
+```
+
+2) Run
+```powershell
+docker compose up --build
+```
+- API: http://localhost:8000
+- Swagger: http://localhost:8000/api/docs
+
+## Notes
+- For production, use Postgres and set a strong `SECRET_KEY`.
+- Set `GROQ_API_KEY` to enable AI features.
+- CORS is wide open for dev; restrict in prod.
+
+## Author
+Your Name — Contact in README.
