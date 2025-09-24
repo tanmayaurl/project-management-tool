@@ -117,9 +117,9 @@ function Login() {
               </div>
 
               <div className="text-sm">
-                <a href="#" className="font-medium text-blue-600 hover:text-blue-500">
+                <button type="button" className="font-medium text-blue-600 hover:text-blue-500">
                   Forgot your password?
-                </a>
+                </button>
               </div>
             </div>
 

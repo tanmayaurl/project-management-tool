@@ -1,8 +1,8 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { api } from '../services/api';
-import { Users, Plus, CheckSquare, UserPlus } from 'lucide-react';
+import { Users, CheckSquare, UserPlus } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 function ProjectDetail() {

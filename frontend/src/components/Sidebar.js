@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { 
   Home, 
   FolderOpen, 
@@ -14,7 +14,6 @@ import { useAuth } from '../contexts/AuthContext';
 
 function Sidebar({ isOpen, onClose, onLogout }) {
   const { user } = useAuth();
-  const navigate = useNavigate();
 
   const navigation = [
     { name: 'Dashboard', href: '/dashboard', icon: Home },
@@ -84,11 +83,7 @@ function Sidebar({ isOpen, onClose, onLogout }) {
                 onClick={onClose}
               >
                 <item.icon
-                  className={`mr-3 h-5 w-5 ${
-                    location.pathname === item.href
-                      ? 'text-blue-500'
-                      : 'text-gray-400 group-hover:text-gray-500'
-                  }`}
+                  className={`mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-500`}
                 />
                 {item.name}
               </NavLink>

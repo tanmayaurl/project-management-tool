@@ -33,6 +33,12 @@ function Projects() {
     () => api.get('/api/projects').then(res => res.data)
   );
 
+  const normalizeDate = (dateStr) => {
+    if (!dateStr) return undefined;
+    // Convert YYYY-MM-DD -> YYYY-MM-DDT00:00:00
+    return `${dateStr}T00:00:00`;
+  };
+
   const createProjectMutation = useMutation(
     (projectData) => api.post('/api/projects/', projectData),
     {
@@ -43,7 +49,11 @@ function Projects() {
         toast.success('Project created successfully!');
       },
       onError: (error) => {
-        toast.error(error.response?.data?.detail || 'Failed to create project');
+        const detail = error?.response?.data?.detail;
+        let message = 'Failed to create project';
+        if (typeof detail === 'string') message = detail;
+        else if (Array.isArray(detail)) message = detail.map(d => d.msg || JSON.stringify(d)).join('; ');
+        toast.error(message);
       },
     }
   );
@@ -56,14 +66,21 @@ function Projects() {
         toast.success('Project deleted successfully!');
       },
       onError: (error) => {
-        toast.error(error.response?.data?.detail || 'Failed to delete project');
+        const detail = error?.response?.data?.detail;
+        toast.error(typeof detail === 'string' ? detail : 'Failed to delete project');
       },
     }
   );
 
   const handleCreateProject = (e) => {
     e.preventDefault();
-    createProjectMutation.mutate(createForm);
+    const payload = {
+      name: createForm.name.trim(),
+      description: createForm.description?.trim() || undefined,
+      start_date: normalizeDate(createForm.start_date),
+      end_date: normalizeDate(createForm.end_date),
+    };
+    createProjectMutation.mutate(payload);
   };
 
   const handleDeleteProject = (projectId) => {

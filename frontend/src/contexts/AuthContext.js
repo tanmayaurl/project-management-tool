@@ -3,6 +3,23 @@ import { api } from '../services/api';
 
 const AuthContext = createContext();
 
+function toErrorMessage(err) {
+  try {
+    const detail = err?.response?.data?.detail ?? err?.message ?? err;
+    if (typeof detail === 'string') return detail;
+    if (Array.isArray(detail)) {
+      const msgs = detail.map((e) => (e?.msg || JSON.stringify(e))).join('; ');
+      return msgs || 'Request failed';
+    }
+    if (typeof detail === 'object') {
+      return detail.msg || JSON.stringify(detail);
+    }
+    return 'Request failed';
+  } catch {
+    return 'Request failed';
+  }
+}
+
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {
@@ -39,7 +56,14 @@ export function AuthProvider({ children }) {
 
   const login = async (credentials) => {
     try {
-      const response = await api.post('/api/auth/login', credentials);
+      const body = new URLSearchParams();
+      body.append('username', credentials.username);
+      body.append('password', credentials.password);
+      body.append('grant_type', 'password');
+      body.append('scope', '');
+      const response = await api.post('/api/auth/login', body, {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      });
       const { access_token } = response.data;
       
       localStorage.setItem('token', access_token);
@@ -50,7 +74,7 @@ export function AuthProvider({ children }) {
     } catch (error) {
       return { 
         success: false, 
-        error: error.response?.data?.detail || 'Login failed' 
+        error: toErrorMessage(error) 
       };
     }
   };
@@ -62,7 +86,7 @@ export function AuthProvider({ children }) {
     } catch (error) {
       return { 
         success: false, 
-        error: error.response?.data?.detail || 'Registration failed' 
+        error: toErrorMessage(error) 
       };
     }
   };
